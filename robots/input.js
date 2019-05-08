@@ -8,7 +8,13 @@ function robot() {
 
   content.searchTerm = askAndReturnSearchTerm()
   content.prefix = askAndReturnPrefix()
+  content.maximumSentences = askQuantityofSentences()
+  //content.prefix = askAndReturnUndefinedPrefix()
   state.save(content)
+
+  function askQuantityofSentences() {
+    return readline.question('How much sentences do you want in your video: ')
+  }
 
   function askAndReturnSearchTerm() {
     return readline.question('Type a Wikipedia search term: ')
