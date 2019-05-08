@@ -104,7 +104,7 @@ async function robot() {
   }
 
   async function uploadVideo(content) {
-    const videoFilePath = './content/output.mov'
+    const videoFilePath = 'video.mp4'
     const videoFileSize = fs.statSync(videoFilePath).size
     const videoTitle = `${content.prefix} ${content.searchTerm}`
     const videoTags = [content.searchTerm, ...content.sentences[0].keywords]
@@ -121,7 +121,7 @@ async function robot() {
           tags: videoTags
         },
         status: {
-          privacyStatus: 'unlisted'
+          privacyStatus: 'public'
         }
       },
       media: {
@@ -145,19 +145,23 @@ async function robot() {
   }
 
   async function uploadThumbnail(videoInformation) {
-    const videoId = videoInformation.id
-    const videoThumbnailFilePath = './content/youtube-thumbnail.jpg'
+    try{
+    	const videoId = videoInformation.id
+    	const videoThumbnailFilePath = './content/youtube-thumbnail.jpg'
 
-    const requestParameters = {
-      videoId: videoId,
-      media: {
-        mimeType: 'image/jpeg',
-        body: fs.createReadStream(videoThumbnailFilePath)
-      }
+    	const requestParameters = {
+      		videoId: videoId,
+      		media: {
+        		mimeType: 'image/jpeg',
+        		body: fs.createReadStream(videoThumbnailFilePath)
+      		}
+    	}
+
+    	const youtubeResponse = await youtube.thumbnails.set(requestParameters)
+    	console.log(`> [youtube-robot] Thumbnail uploaded!`)
+    }catch(e){
+    	console.log(`> [youtube-robot] Thumbnail não enviada `)
     }
-
-    const youtubeResponse = await youtube.thumbnails.set(requestParameters)
-    console.log(`> [youtube-robot] Thumbnail uploaded!`)
   }
 
 
