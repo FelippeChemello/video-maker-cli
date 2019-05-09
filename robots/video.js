@@ -6,12 +6,18 @@ const rootPath = path.resolve(__dirname, "..");
 const videoshow = require("videoshow");
 const ffmpegPath = require("@ffmpeg-installer/ffmpeg").path;
 const ffprobePath = require("@ffprobe-installer/ffprobe").path;
+const mp3Duration = require('mp3-duration');
 let ffmpeg = require("fluent-ffmpeg");
 ffmpeg.setFfmpegPath(ffmpegPath);
 ffmpeg.setFfprobePath(ffprobePath);
 
 async function robot() {
   const content = state.load();
+
+  let images = [];
+  var tempo;
+  var qntImages = 0;
+
 
   await convertAllImages(content);
   //await createAllSentenceImages(content);
@@ -183,27 +189,29 @@ async function robot() {
   //   });
   // }
 
+  async function defineTimeOfEachSlide(){
+    for (let sentenceIndex = 0; sentenceIndex < content.sentences.length; sentenceIndex++) {
+      await mp3Duration(`output[${sentenceIndex}].mp3`, function (err, duration) {
+        if (err) return console.log(err.message);
+        tempo = duration;
+        console.log(`File output[${sentenceIndex}] - ${duration} secounds`);
+      });
+      await images.push({
+        path: `./content/${sentenceIndex}-converted.png`,
+        caption: content.sentences[sentenceIndex].text,
+        loop: tempo/5
+      });
+      qntImages++;
+    }
+  }
+
   async function renderVideoWithNode(content) {
+    await defineTimeOfEachSlide();
+
     return new Promise((resolve, reject) => {
-      let images = [];
-
-      var qntImages = 0;
-
-      for (
-        let sentenceIndex = 0;
-        sentenceIndex < content.sentences.length;
-        sentenceIndex++
-      ) {
-        images.push({
-          path: `./content/${sentenceIndex}-converted.png`,
-          caption: content.sentences[sentenceIndex].text
-        });
-        qntImages++;
-      }
 
       const videoOptions = {
         fps: 25,
-        loop: 10, // seconds
         transition: true,
         transitionDuration: 1, // seconds
         videoBitrate: 1024,
