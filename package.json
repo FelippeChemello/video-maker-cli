@@ -19,15 +19,20 @@
   "dependencies": {
     "@ffmpeg-installer/ffmpeg": "^1.0.17",
     "@ffprobe-installer/ffprobe": "^1.0.10",
-    "videoshow": "^0.1.11",
-    "fluent-ffmpeg": "^2.1.2",
+    "@google-cloud/text-to-speech": "^0.5.1",
     "algorithmia": "^0.3.10",
+    "download-file": "^0.1.5",
     "express": "^4.16.4",
+    "fluent-ffmpeg": "^2.1.2",
+    "get-audio-duration": "^1.0.0",
     "gm": "^1.23.1",
+    "google-tts-api": "0.0.4",
     "googleapis": "^38.0.0",
     "image-downloader": "^3.4.2",
+    "mp3-duration": "^1.1.0",
     "readline-sync": "^1.4.9",
     "sbd": "^1.0.14",
+    "videoshow": "^0.1.11",
     "watson-developer-cloud": "^3.18.2"
   }
 }
