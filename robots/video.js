@@ -12,6 +12,9 @@ ffmpeg.setFfmpegPath(ffmpegPath);
 ffmpeg.setFfprobePath(ffprobePath);
 
 async function robot() {
+
+  console.log("> [video-robot] Starting...")
+
   const content = state.load();
 
   let images = [];
@@ -20,11 +23,11 @@ async function robot() {
   var x;
   var y;
 
-  //await createAllSentenceImages(content)
+  await createAllSentenceImages(content)
   await convertAllImages(content);
   await insertAllSentencesInImages(content);
-  //await createYouTubeThumbnail();
-  //await renderVideo("node", content);
+  await createYouTubeThumbnail();
+  await renderVideo("node", content);
 
   state.save(content);
 
@@ -40,46 +43,48 @@ async function robot() {
 
   async function convertImage(sentenceIndex) {
     return new Promise((resolve, reject) => {
-      const inputFile = `./content/${sentenceIndex}-original.png[0]`;
-      const outputStep1 = `./content/${sentenceIndex}-step1.png`;
-      const outputFile = `./content/${sentenceIndex}-converted.png`;
-      const width = 1280;
-      const height = 720;
+      const inputFile = `./content/${sentenceIndex}-original.png[0]`
+      const outputFile = `./content/${sentenceIndex}-converted.png`
+      const width = 1920
+      const height = 1080
 
-      gm(inputFile)
-          .resize(width, height, "!")
-          .blur(7, 5)
-          .write(outputStep1, function (err) {
-            if (err){
-
-            }else {
-              console.log(`> [video-robot] Step 1: ${inputFile}`);
-
+      gm()
+          .in(inputFile)
+          .out('(')
+          .out('-clone')
+          .out('0')
+          .out('-background', 'white')
+          .out('-blur', '0x9')
+          .out('-resize', `${width}x${height}^`)
+          .out(')')
+          .out('(')
+          .out('-clone')
+          .out('0')
+          .out('-background', 'white')
+          .out('-resize', `${width}x${height}`)
+          .out(')')
+          .out('-delete', '0')
+          .out('-gravity', 'center')
+          .out('-compose', 'over')
+          .out('-composite')
+          .out('-extent', `${width}x${height}`)
+          .write(outputFile, (error) => {
+            if (error) {
+              return reject(error)
             }
-          });
 
-      gm(outputStep1)
-          //.resize(width, height)
-          .composite(inputFile)
-          .gravity("Center")
-          .write(outputFile, function (err) {
-            if (err) {
-              console.error(`> [video-robot] Image error: ${inputFile}`);
-            } else {
-              console.log(`> [video-robot] Image converted: ${inputFile}`);
-              resolve();
-            }
-          });
+            console.log(`> [video-robot] Image converted: ${outputFile}`)
+            resolve()
+          })
 
-
-      resolve();
-    });
+    })
   }
+
 
   async function insertAllSentencesInImages(content) {
     for (
         let sentenceIndex = 0;
-        sentenceIndex < (content.maximumSentences-1);
+        sentenceIndex < (content.sentences.length);
         sentenceIndex++
     ) {
       await insertSentenceInImage(sentenceIndex);
@@ -100,9 +105,9 @@ async function robot() {
           .gravity('South')
           .write(outputFile, function (err) {
             if (err) {
-              console.error(`> [video-robot] Image error: ${inputFile}`);
+              console.error(`> [video-robot] Image compose ERROR: ${inputFile} & ${inputTextFile}`);
             } else {
-              console.log(`> [video-robot] Image converted: ${inputFile}`);
+              console.log(`> [video-robot] Image compose complete: ${outputFile}`);
               resolve();
             }
           });
@@ -133,6 +138,8 @@ async function robot() {
         .out("-gravity", gravity)
         .out("-background", "transparent")
         .out("-fill", "yellow")
+        .out("-stroke", "gray")
+        .out("-strokewidth", "3")
         .out("-kerning", "-1")
         .out(`caption:${sentenceText}`)
         .write(outputFile, error => {
@@ -163,15 +170,15 @@ async function robot() {
 
   async function defineTimeOfEachSlide(){
     for (let sentenceIndex = 0; sentenceIndex < content.sentences.length; sentenceIndex++) {
-      await mp3Duration(`output[${sentenceIndex}].mp3`, function (err, duration) {
+      await mp3Duration(`./content/output[${sentenceIndex}].mp3`, function (err, duration) {
         if (err) return console.log(err.message);
         tempo = duration;
-        console.log(`File output[${sentenceIndex}] - ${duration} secounds`);
+        //console.log(`File output[${sentenceIndex}] - ${duration} secounds`);
       });
       await images.push({
         path: `./content/${sentenceIndex}-finished.png`,
-        caption: content.sentences[sentenceIndex].text,
-        loop: tempo/5
+        //caption: content.sentences[sentenceIndex].text,
+        loop: tempo
       });
       qntImages++;
     }
@@ -218,7 +225,7 @@ async function robot() {
       console.log("> [video-robot] Starting render")
 
       videoshow(images, videoOptions)
-         .audio("song.mp3")
+         .audio("./content/output[final].mp3")
          .save("video.mp4")
          .on("start", function(command) {
              console.log("> [video-robot] ffmpeg process started:", command);
