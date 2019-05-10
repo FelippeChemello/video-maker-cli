@@ -17,13 +17,14 @@ async function robot() {
   let images = [];
   var tempo;
   var qntImages = 0;
+  var x;
+  var y;
 
-
+  //await createAllSentenceImages(content)
   await convertAllImages(content);
-  //await createAllSentenceImages(content);
-  await createYouTubeThumbnail();
-  //await createAfterEffectsScript(content);
-  await renderVideo("node", content);
+  await insertAllSentencesInImages(content);
+  //await createYouTubeThumbnail();
+  //await renderVideo("node", content);
 
   state.save(content);
 
@@ -33,45 +34,78 @@ async function robot() {
       sentenceIndex < content.sentences.length;
       sentenceIndex++
     ) {
-      await convertImage(sentenceIndex);
+      await convertImage(sentenceIndex, content.sentences[sentenceIndex].text);
     }
   }
 
   async function convertImage(sentenceIndex) {
     return new Promise((resolve, reject) => {
       const inputFile = `./content/${sentenceIndex}-original.png[0]`;
+      const outputStep1 = `./content/${sentenceIndex}-step1.png`;
       const outputFile = `./content/${sentenceIndex}-converted.png`;
       const width = 1280;
       const height = 720;
 
-      gm()
-        .in(inputFile)
-        .out("(")
-        .out("-clone")
-        .out("0")
-        .out("-background", "white")
-        .out("-blur", "0x9")
-        .out("-resize", `${width}x${height}^`)
-        .out(")")
-        .out("(")
-        .out("-clone")
-        .out("0")
-        .out("-background", "white")
-        .out("-resize", `${width}x${height}`)
-        .out(")")
-        .out("-delete", "0")
-        .out("-gravity", "center")
-        .out("-compose", "over")
-        .out("-composite")
-        .out("-extent", `${width}x${height}`)
-        .write(outputFile, error => {
-          if (error) {
-            return reject(error);
-          }
+      gm(inputFile)
+          .resize(width, height, "!")
+          .blur(7, 5)
+          .write(outputStep1, function (err) {
+            if (err){
 
-          console.log(`> [video-robot] Image converted: ${inputFile}`);
-          resolve();
-        });
+            }else {
+              console.log(`> [video-robot] Step 1: ${inputFile}`);
+
+            }
+          });
+
+      gm(outputStep1)
+          //.resize(width, height)
+          .composite(inputFile)
+          .gravity("Center")
+          .write(outputFile, function (err) {
+            if (err) {
+              console.error(`> [video-robot] Image error: ${inputFile}`);
+            } else {
+              console.log(`> [video-robot] Image converted: ${inputFile}`);
+              resolve();
+            }
+          });
+
+
+      resolve();
+    });
+  }
+
+  async function insertAllSentencesInImages(content) {
+    for (
+        let sentenceIndex = 0;
+        sentenceIndex < (content.maximumSentences-1);
+        sentenceIndex++
+    ) {
+      await insertSentenceInImage(sentenceIndex);
+    }
+  }
+
+  async function insertSentenceInImage(sentenceIndex){
+    return new Promise((resolve, reject) => {
+      const inputFile = `./content/${sentenceIndex}-converted.png`;
+      const inputTextFile = `./content/${sentenceIndex}-sentence.png`
+      const outputFile = `./content/${sentenceIndex}-finished.png`;
+      const width = 1280;
+      const height = 720;
+
+      gm(inputFile)
+          .resize(width, height)
+          .composite(inputTextFile)
+          .gravity('South')
+          .write(outputFile, function (err) {
+            if (err) {
+              console.error(`> [video-robot] Image error: ${inputFile}`);
+            } else {
+              console.log(`> [video-robot] Image converted: ${inputFile}`);
+              resolve();
+            }
+          });
     });
   }
 
@@ -91,43 +125,14 @@ async function robot() {
   async function createSentenceImage(sentenceIndex, sentenceText) {
     return new Promise((resolve, reject) => {
       const outputFile = `./content/${sentenceIndex}-sentence.png`;
-
-      const templateSettings = {
-        0: {
-          size: "1920x400",
-          gravity: "center"
-        },
-        1: {
-          size: "1920x1080",
-          gravity: "center"
-        },
-        2: {
-          size: "800x1080",
-          gravity: "west"
-        },
-        3: {
-          size: "1920x400",
-          gravity: "center"
-        },
-        4: {
-          size: "1920x1080",
-          gravity: "center"
-        },
-        5: {
-          size: "800x1080",
-          gravity: "west"
-        },
-        6: {
-          size: "1920x400",
-          gravity: "center"
-        }
-      };
+      const size = "5120x720";
+      const gravity = "west";
 
       gm()
-        .out("-size", templateSettings[sentenceIndex].size)
-        .out("-gravity", templateSettings[sentenceIndex].gravity)
+        .out("-size", size)
+        .out("-gravity", gravity)
         .out("-background", "transparent")
-        .out("-fill", "white")
+        .out("-fill", "yellow")
         .out("-kerning", "-1")
         .out(`caption:${sentenceText}`)
         .write(outputFile, error => {
@@ -156,39 +161,6 @@ async function robot() {
     });
   }
 
-  // async function createAfterEffectsScript(content) {
-  //   await state.saveScript(content);
-  // }
-  //
-  // async function renderVideoWithAfterEffects() {
-  //   return new Promise((resolve, reject) => {
-  //     const aerenderFilePath =
-  //       "/Applications/Adobe After Effects CC 2019/aerender";
-  //     const templateFilePath = `${rootPath}/templates/1/template.aep`;
-  //     const destinationFilePath = `${rootPath}/content/output.mov`;
-  //
-  //     console.log("> [video-robot] Starting After Effects");
-  //
-  //     const aerender = spawn(aerenderFilePath, [
-  //       "-comp",
-  //       "main",
-  //       "-project",
-  //       templateFilePath,
-  //       "-output",
-  //       destinationFilePath
-  //     ]);
-  //
-  //     aerender.stdout.on("data", data => {
-  //       process.stdout.write(data);
-  //     });
-  //
-  //     aerender.on("close", () => {
-  //       console.log("> [video-robot] After Effects closed");
-  //       resolve();
-  //     });
-  //   });
-  // }
-
   async function defineTimeOfEachSlide(){
     for (let sentenceIndex = 0; sentenceIndex < content.sentences.length; sentenceIndex++) {
       await mp3Duration(`output[${sentenceIndex}].mp3`, function (err, duration) {
@@ -197,7 +169,7 @@ async function robot() {
         console.log(`File output[${sentenceIndex}] - ${duration} secounds`);
       });
       await images.push({
-        path: `./content/${sentenceIndex}-converted.png`,
+        path: `./content/${sentenceIndex}-finished.png`,
         caption: content.sentences[sentenceIndex].text,
         loop: tempo/5
       });
@@ -281,8 +253,6 @@ async function robot() {
 
   async function renderVideo(type, content) {
     if (type == "after") {
-    //   await renderVideoWithAfterEffects();
-    //   console.log("> [video-robot] Renderização finalizada");
         console.log("Renderização por AfterEffects desabilitada!");
      } else {
       await renderVideoWithNode(content);
