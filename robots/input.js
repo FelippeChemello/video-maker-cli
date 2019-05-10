@@ -6,6 +6,7 @@ function robot() {
   const content = {};
 
   content.language = askVideoLanguage();
+  content.voice = askVoice();
   content.searchTerm = askAndReturnSearchTerm();
   content.prefix = askAndReturnPrefix();
   content.maximumSentences = askQuantityofSentences();
@@ -18,6 +19,21 @@ function robot() {
     const selectedLanguageIndex = readline.keyInSelect(language, 'Choose your language: ');
 
     return language[selectedLanguageIndex];
+  }
+
+  function askVoice(){
+      let voices;
+      let query;
+      if(content.language === "PT") {
+          voices = ['Paga', 'Gratuita'];
+          query =  "Qual voz você deseja utilizar";
+      }else{
+          voices = ['Paid', 'Free'];
+          query =  "Choose your voice: ";
+      }
+      const selectedVoiceIndex = readline.keyInSelect(voices, query);
+
+      return voices[selectedVoiceIndex];
   }
 
   function askQuantityofSentences() {
