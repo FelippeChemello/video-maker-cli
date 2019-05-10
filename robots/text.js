@@ -22,6 +22,7 @@ async function robot() {
   breakContentIntoSentences(content)
   limitMaximumSentences(content)
   await fetchKeywordsOfAllSentences(content)
+  await createFullText(content)
 
   state.save(content)
 
@@ -113,6 +114,23 @@ async function robot() {
 
         resolve(keywords)
       })
+    })
+  }
+
+  async function createFullText(content) {
+    console.log('> [text-robot] Creating fulltext')
+    content.fullText = "";
+    return new Promise((resolve, reject) => {
+      for (
+          let sentenceIndex = 0;
+          sentenceIndex < content.sentences.length;
+          sentenceIndex++
+      ) {
+        content.fullText += " \n\n\n ";
+        content.fullText += content.sentences[sentenceIndex].text;
+      }
+      console.log('> [text-robot] Fulltext created')
+      resolve();
     })
   }
 
