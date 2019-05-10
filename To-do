@@ -1,5 +1,9 @@
+arrumar Texto dentro da imagem
+
 Arrumar o video que está gerando dessincronizado
 inserir a voz ao video
+
+Adicionar ao README autenticação do google-tts "export GOOGLE_APPLICATION_CREDENTIALS="credentials/google-tts.json""
 
 https://www.npmjs.com/package/mp3-duration
 https://www.npmjs.com/package/videoshow
