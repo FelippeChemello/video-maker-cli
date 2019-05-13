@@ -9,6 +9,18 @@ async function robot() {
   console.log('> [youtube-robot] Starting...')
   const content = state.load()
 
+  const videoFilePath = 'video.mp4'
+  const videoFileSize = fs.statSync(videoFilePath).size
+  const videoTitle = `${content.prefix} ${content.searchTerm}`
+  let videoTags = [content.searchTerm]
+  for(let i = 0; i < content.sentences.length; i++) {
+    videoTags.push(content.sentences[i].keywords)
+  }
+  const videoDescription = content.sentences.map((sentence) => {
+    return sentence.text
+  }).join('\n\n')
+
+
   if(content.videoDestination == "YouTube") {
 
     await authenticateWithOAuth()
@@ -107,14 +119,6 @@ async function robot() {
 
     async function uploadVideo(content) {
       try {
-        const videoFilePath = 'video.mp4'
-        const videoFileSize = fs.statSync(videoFilePath).size
-        const videoTitle = `${content.prefix} ${content.searchTerm}`
-        const videoTags = [content.searchTerm, ...content.sentences[0].keywords]
-        const videoDescription = content.sentences.map((sentence) => {
-          return sentence.text
-        }).join('\n\n')
-
         const requestParameters = {
           part: 'snippet, status',
           requestBody: {
@@ -138,6 +142,9 @@ async function robot() {
         })
 
         console.log(`> [youtube-robot] Video available at: https://youtu.be/${youtubeResponse.data.id}`)
+        console.log(`\n> [youtube-robot] Video Title: ${videoTitle}`)
+        console.log(`\n> [youtube-robot] Video Description: ${videoDescription}`)
+        console.log(`\n> [youtube-robot] Video Tags: ${videoTags}`)
         return youtubeResponse.data
 
         function onUploadProgress(event) {
@@ -148,16 +155,9 @@ async function robot() {
       }catch (e) {
         console.error('> [youtube-robot] YouTube upload ERROR')
         console.log('> [youtube-robot] You Need to upload video manually')
-
-        const videoTitle = `${content.prefix} ${content.searchTerm}`
-        const videoTags = [content.searchTerm, ...content.sentences[0].keywords]
-        const videoDescription = content.sentences.map((sentence) => {
-          return sentence.text
-        }).join('\n\n')
-
-        console.log(`> [youtube-robot] Video Title ${videoTitle}`)
-        console.log(`> [youtube-robot] Video Description ${videoDescription}`)
-        console.log(`> [youtube-robot] Video Tags ${videoTags}`)
+        console.log(`\n> [youtube-robot] Video Title: ${videoTitle}`)
+        console.log(`\n> [youtube-robot] Video Description: ${videoDescription}`)
+        console.log(`\n> [youtube-robot] Video Tags: ${videoTags}`)
 
       }
     }
@@ -185,16 +185,9 @@ async function robot() {
   }else{
     console.error('> [youtube-robot] Video processing ended')
     console.log('> [youtube-robot] You Need to upload video manually')
-
-    const videoTitle = `${content.prefix} ${content.searchTerm}`
-    const videoTags = [content.searchTerm, ...content.sentences[0].keywords]
-    const videoDescription = content.sentences.map((sentence) => {
-      return sentence.text
-    }).join('\n\n')
-
-    console.log(`> [youtube-robot] Video Title ${videoTitle}`)
-    console.log(`> [youtube-robot] Video Description ${videoDescription}`)
-    console.log(`> [youtube-robot] Video Tags ${videoTags}`)
+    console.log(`\n> [youtube-robot] Video Title: ${videoTitle}`)
+    console.log(`\n> [youtube-robot] Video Description: ${videoDescription}`)
+    console.log(`\n> [youtube-robot] Video Tags: ${videoTags}`)
   }
 }
 
