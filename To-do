@@ -1,5 +1,2 @@
-inserir no README autenticação do google-tts
-Inserir linguagem ingles no robo voice
-Criar imagem inicial do video - intro
-inserir musica no video
+inserir musica no video - video.js::insermusic()
 adicionar robo wikipedia para input - https://github.com/filipedeschamps/video-maker/pull/34/commits
