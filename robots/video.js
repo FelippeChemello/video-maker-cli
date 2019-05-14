@@ -21,8 +21,6 @@ async function robot() {
     let images = [];
     var tempo;
     var qntImages = 0;
-    var x;
-    var y;
 
     await createAllSentenceImages(content);
     await convertAllImages(content);
@@ -333,7 +331,6 @@ async function robot() {
     }
 
     async function insertMusic(){
-
     }
 
     async function renderVideo(type, content) {
