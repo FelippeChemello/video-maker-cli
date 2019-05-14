@@ -11,7 +11,7 @@ async function robot() {
 
   const videoFilePath = 'video.mp4'
   const videoFileSize = fs.statSync(videoFilePath).size
-  const videoTitle = `${content.prefix} ${content.searchTerm}`
+  const videoTitle = `${content.prefix} ${content.searchTerm} [${content.language}]`
   let videoTags = [content.searchTerm]
   for(let i = 0; i < content.sentences.length; i++) {
     videoTags.push(content.sentences[i].keywords)
