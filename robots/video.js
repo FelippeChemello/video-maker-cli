@@ -28,7 +28,6 @@ async function robot() {
     await createYouTubeThumbnail();
     await createImageIntro(content);
     await renderVideo("node", content);
-    await insertMusic()
 
     state.save(content);
 
@@ -299,7 +298,7 @@ async function robot() {
                 }
             };
 
-            var i = 0;
+            let i = 0;
 
             console.log("> [video-robot] Starting render");
 
@@ -311,18 +310,13 @@ async function robot() {
                     i++;
                 })
                 .on('progress', function (progress) {
-                    var process = 0;
-                    if (i <= 1) {
-                        process = progress.percent;
-                        process = process / (content.maximumSentences + 1);
-                    } else {
-                        process = progress.percent;
+                    if (typeof progress.targetSize !== 'undefined' && typeof progress.percent !== 'undefined') {
+                        if (i <= 1) {
+                            console.log("> [video-robot] Processing: " + progress.targetSize/1000 + "MB");
+                        } else {
+                            console.log("> [video-robot] Processing: " + (progress.percent).toFixed(2) + "%");
+                        }
                     }
-                    if (typeof process === 'undefined') {
-                        process = 0;
-                    }
-                    console.log("> [video-robot] Processing: " + process.toFixed(2) + "%");
-
                 })
                 .on("error", function (err, stdout, stderr) {
                     console.error("> [video-robot] Error:", err);
@@ -333,9 +327,6 @@ async function robot() {
                     resolve();
                 });
         });
-    }
-
-    async function insertMusic(){
     }
 
     async function renderVideo(type, content) {
