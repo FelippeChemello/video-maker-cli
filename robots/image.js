@@ -15,7 +15,7 @@ async function robot() {
   state.save(content)
 
   async function fetchImagesOfAllSentences(content) {
-    for (let sentenceIndex = 0; sentenceIndex < content.sentences.length; sentenceIndex++) {
+    for (let sentenceIndex = 0; sentenceIndex < content.maximumSentences; sentenceIndex++) {
       let query
 
       if (sentenceIndex === 0) {
@@ -38,7 +38,7 @@ async function robot() {
       cx: googleSearchCredentials.searchEngineId,
       q: query,
       searchType: 'image',
-      num: 2
+      num: 5
     })
 
     const imagesUrl = response.data.items.map((item) => {
@@ -51,7 +51,7 @@ async function robot() {
   async function downloadAllImages(content) {
     content.downloadedImages = []
 
-    for (let sentenceIndex = 0; sentenceIndex < content.sentences.length; sentenceIndex++) {
+    for (let sentenceIndex = 0; sentenceIndex < content.maximumSentences; sentenceIndex++) {
       const images = content.sentences[sentenceIndex].images
 
       for (let imageIndex = 0; imageIndex < images.length; imageIndex++) {
