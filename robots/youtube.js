@@ -170,7 +170,7 @@ async function robot() {
                 }
 
             } catch (e) {
-                console.error('> [youtube-robot] YouTube upload ERROR');
+                console.error('> [youtube-robot] YouTube upload ERROR ' + e);
                 console.log('> [youtube-robot] You Need to upload video manually');
                 console.log(`\n> [youtube-robot] Video Title: ${videoTitle}`);
                 console.log(`\n> [youtube-robot] Video Description: ${videoDescription}`);
@@ -196,7 +196,7 @@ async function robot() {
                 const youtubeResponse = await youtube.thumbnails.set(requestParameters);
                 console.log(`> [youtube-robot] Thumbnail uploaded!`)
             } catch (e) {
-                console.log(`> [youtube-robot] Thumbnail não enviada `)
+                console.log(`> [youtube-robot] Thumbnail não enviada ` + e)
             }
         }
 
