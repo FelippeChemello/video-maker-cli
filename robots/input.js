@@ -61,11 +61,11 @@ function robot() {
     let query;
     let query2;
     if(content.language === "PT") {
-      prefixes = ['Quem é', 'O que é', 'A história de', ':ABOUT:  ', 'Personalizada'];
+      prefixes = ['Quem é', 'O que é', 'A história de', ':ABOUT:', 'Personalizada'];
       query =  "Escolha um prefixo:";
       query2 = "Insira o prefixo para pesquisa:";
     }else{
-      prefixes = ['Who is', 'What is', 'The History of', ':ABOUT:  ', 'Custom'];
+      prefixes = ['Who is', 'What is', 'The History of', ':ABOUT:', 'Custom'];
       query =  "Escolha um prefixo:";
       query2 = "Insert a custom prefix: ";
     }
