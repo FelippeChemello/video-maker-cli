@@ -1,6 +1,7 @@
 const algorithmia = require('algorithmia');
 const algorithmiaApiKey = require('../credentials/algorithmia.json').apiKey;
 const sentenceBoundaryDetection = require('sbd');
+const readline = require('readline-sync');
 
 const watsonApiKey = require('../credentials/watson-nlu.json').apikey;
 const NaturalLanguageUnderstandingV1 = require('watson-developer-cloud/natural-language-understanding/v1.js');
@@ -24,6 +25,7 @@ async function robot() {
     limitMaximumSentences(content);
     await fetchKeywordsOfAllSentences(content);
     await createFullText(content);
+    await askRemoveSentence(content);
 
     state.save(content);
 
@@ -131,7 +133,7 @@ async function robot() {
         return new Promise((resolve, reject) => {
             for (
                 let sentenceIndex = 0;
-                sentenceIndex < content.sentences.length;
+                sentenceIndex < content.maximumSentences;
                 sentenceIndex++
             ) {
                 content.fullText += " \n\n\n ";
@@ -140,6 +142,60 @@ async function robot() {
             console.log('> [text-robot] Fulltext created');
             resolve();
         })
+    }
+
+    async function askRemoveSentence(content) {
+        return new Promise((resolve, reject) => {
+            let query;
+            let query2;
+            let awnser;
+            let awnser2 = [];
+            let selectedSentenceIndex = [];
+
+            for (let index = 0; index < content.maximumSentences; index++) {
+                awnser2.push(index + 1);
+            }
+
+            showSentencesWithIndex(content);
+
+            if (content.language === "PT") {
+                query = "\n\n> [text-robot] Deseja excluir alguma frase? ";
+                awnser = ["Sim", "Não"];
+                query2 = "> [text-robot] Qual frase você deseja remover? ";
+            } else {
+                query = "\n\n> [text-robot] Do you want to remove any sentence? ";
+                awnser = ["Yes", "No"];
+                query2 = "> [text-robot] Which sentence do you want to remove?";
+            }
+            let selectedAwnserIndex = readline.keyInSelect(awnser, query);
+            while (selectedAwnserIndex === 0) {
+                selectedSentenceIndex.push(readline.keyInSelect(awnser2, query2));
+
+                let index = selectedSentenceIndex[0];
+                //console.log(`Removendo sentença ${index}`);
+                for (let i = index; i < (content.maximumSentences); i++) {
+                    content.sentences[i] = content.sentences[i + 1];
+                    //console.log(`Sentença ${i + 1} virou ${i}`);
+                }
+                content.maximumSentences = (content.maximumSentences - 1);
+                selectedSentenceIndex.shift();
+
+                awnser2 = [];
+                for (let index = 0; index < content.maximumSentences; index++) {
+                    awnser2.push(index + 1);
+                }
+
+                showSentencesWithIndex(content);
+                selectedAwnserIndex = readline.keyInSelect(awnser, query);
+            }
+            resolve();
+        });
+    }
+
+    function showSentencesWithIndex(content) {
+        for (let index = 0; index < content.maximumSentences; index++) {
+            console.log(`> [text-robot] Sentence ${index + 1} \n${content.sentences[index].text} \n`)
+        }
     }
 
 }
