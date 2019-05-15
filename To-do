@@ -1,5 +1,3 @@
-inserir musica no video - video.js::insermusic()
-adicionar robo wikipedia para input - https://github.com/filipedeschamps/video-maker/pull/34/commits
+inserir musica no video
+implementar google trends (trends.js)
 Criar opção default, onde só pergunta a linguagem e o searchterm
-Arrumar porcentagem do primeiro render
-testar tags de video quando subir pro yt
