@@ -36,7 +36,7 @@ async function robot() {
         languagePaid = "en-US-Wavenet-C";
     }
 
-    for (let sentenceIndex = 0; sentenceIndex < content.sentences.length; sentenceIndex++) {
+    for (let sentenceIndex = 0; sentenceIndex < content.maximumSentences; sentenceIndex++) {
 
         console.log(`> [voice-robot] Sentence ${sentenceIndex}`);
         let text = content.sentences[sentenceIndex].text;
@@ -60,7 +60,7 @@ async function robot() {
             console.error(`> [voice-robot] output[${i}].mp3 doesn't exist`);
             await sleep(1000);
         }
-    }while (i < content.sentences.length);
+    }while (i < content.maximumSentences);
 
     await voicesConcat();
 
