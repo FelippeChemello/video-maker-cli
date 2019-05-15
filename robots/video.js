@@ -35,7 +35,7 @@ async function robot() {
     async function convertAllImages(content) {
         for (
             let sentenceIndex = 0;
-            sentenceIndex < content.sentences.length;
+            sentenceIndex < content.maximumSentences;
             sentenceIndex++
         ) {
             await convertImage(sentenceIndex, content.sentences[sentenceIndex].text);
@@ -85,7 +85,7 @@ async function robot() {
     async function insertAllSentencesInImages(content) {
         for (
             let sentenceIndex = 0;
-            sentenceIndex < (content.sentences.length);
+            sentenceIndex < (content.maximumSentences);
             sentenceIndex++
         ) {
             await insertSentenceInImage(sentenceIndex);
@@ -118,7 +118,7 @@ async function robot() {
     async function createAllSentenceImages(content) {
         for (
             let sentenceIndex = 0;
-            sentenceIndex < content.sentences.length;
+            sentenceIndex < content.maximumSentences;
             sentenceIndex++
         ) {
             await createSentenceImage(
@@ -168,7 +168,12 @@ async function robot() {
 
     async function createSentenceIntro(content, outputFileSentence) {
         return new Promise((resolve, reject) => {
-            let sentenceText = content.prefix + "\n" + content.searchTerm;
+            let sentenceText;
+            if(content.prefix === ':ABOUT:'){
+                sentenceText = content.searchTerm;
+            }else{
+                sentenceText = content.prefix + "\n" +  content.searchTerm;
+            }
 
             gm()
                 .out("-size", "2560x720")
@@ -206,7 +211,7 @@ async function robot() {
     async function composeIntroImage(outputFileSentence, outputFileImage, outputImageIntro) {
         return new Promise((resolve, reject) => {
 
-            console.log("> [video-robot] compondo imagem");
+            //console.log("> [video-robot] compondo imagem");
             gm(outputFileImage)
                 .resize(1280, 720)
                 .composite(outputFileSentence)
@@ -243,7 +248,7 @@ async function robot() {
     }
 
     async function defineTimeOfEachSlide() {
-        for (let sentenceIndex = 0; sentenceIndex < content.sentences.length; sentenceIndex++) {
+        for (let sentenceIndex = 0; sentenceIndex < content.maximumSentences; sentenceIndex++) {
             await mp3Duration(`./content/output[${sentenceIndex}].mp3`, function (err, duration) {
                 if (err) return console.log(err.message);
                 tempo = duration;
