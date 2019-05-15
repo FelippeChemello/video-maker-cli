@@ -2,6 +2,7 @@ const imageDownloader = require('image-downloader')
 const google = require('googleapis').google
 const customSearch = google.customsearch('v1')
 const state = require('./state.js')
+const fs = require('fs')
 
 const googleSearchCredentials = require('../credentials/google-search.json')
 
