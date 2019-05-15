@@ -26,6 +26,7 @@
     "fluent-ffmpeg": "^2.1.2",
     "get-audio-duration": "^1.0.0",
     "gm": "^1.23.1",
+    "google-trends-api": "^4.9.0",
     "google-tts-api": "0.0.4",
     "googleapis": "^38.0.0",
     "image-downloader": "^3.4.2",
