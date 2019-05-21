@@ -1,6 +1,6 @@
 inserir musica no video
 implementar google trends (trends.js)
-Criar opção default, onde só pergunta a linguagem e o searchterm
 
+Implementar database.json para salvar todas as informações inseridas e caso deseje recuperar solicitar pelo ID unico
 
 Opção para substituição do imagemagick https://www.npmjs.com/package/jimp
