@@ -15,7 +15,7 @@ async function start() {
 
     await robots.start();
     robots.input();
-    //await robots.trends();
+    await robots.trends();
     await robots.text();
     await robots.image();
     await robots.voice();
