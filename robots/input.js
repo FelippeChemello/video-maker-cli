@@ -1,28 +1,45 @@
 const readline = require('readline-sync');
 const state = require('./state.js');
-const robots = {database: require('./robots/database.js')}
+const database = require('./database.js')
 
 function robot() {
 
     const content = {};
 
     const saveOrLoad = askSaveOrLoad();
-    content.language = askVideoLanguage();
 
     if (saveOrLoad === "Custom") {
+
+        content.language = askVideoLanguage();
         content.voice = askVoice();
         content.searchTerm = askAndReturnSearchTerm();
         content.prefix = askAndReturnPrefix();
         content.maximumSentences = askQuantityofSentences();
         content.videoDestination = askVideoDestination();
-        robots.database("saveBaseData");
         state.save(content);
-    }else if (saveOrLoad === "Pattern"){
+        database.saveBaseData(content);
+
+    }else if (saveOrLoad === "LoadId"){
+
         content.id = askIdDatabase();
         state.save(content);
         robots.database("loadById");
+
+    }else if (saveOrLoad === "Default"){
+
+        content.id = 1;
+        state.save(content);
+        robots.database("loadById");
+        console.log("input: " + content)
+        content.searchTerm = askAndReturnSearchTerm();
+        state.save(content);
+        robots.database("saveBaseData");
+
     }else{
-        console.log("TEM QUE CRIAR DEFAULT AQUI ");
+
+        console.log("Exiting...");
+        process.exit();
+
     }
 
     function askVideoLanguage() {
@@ -33,16 +50,11 @@ function robot() {
     }
 
     function askSaveOrLoad(){
-        let query;
-        if (content.language === "PT") {
-            query = "Utilizar padrão ou customizado?";
-        } else {
-            query = "Do you want to use a pattern or custom?";
-        }
-        const options = ['Pattern', 'Custom', "LoadId"];
-        const selectedoptionIndex = readline.keyInSelect(options, query);
+        let query = "Do you want to use a pattern or custom?";
+        const options = ['Default', 'Custom', "LoadId"];
+        const selectedOptionIndex = readline.keyInSelect(options, query);
 
-        return options[selectedoptionIndex];
+        return options[selectedOptionIndex];
     }
 
     function askIdDatabase(){
