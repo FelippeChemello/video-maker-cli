@@ -24,6 +24,7 @@ async function robot() {
     breakContentIntoSentences(content);
     limitMaximumSentences(content);
     await fetchKeywordsOfAllSentences(content);
+    await checkNumberOfSentences(content);
     await createFullText(content);
     await askRemoveSentence(content);
 
@@ -125,6 +126,15 @@ async function robot() {
                 resolve(keywords)
             })
         })
+    }
+
+    function checkNumberOfSentences(content){
+        if(content.sentences.length < content.maximumSentences){
+            console.error("> [text-robot] Wikipedia article doesn't fetch to number of senteces asked");
+            console.error("> [text-robot] Please ask only " + content.sentences.length + " sentences or choose another SearchTerm");
+            console.error("> [text-robot] Exiting... ");
+            process.exit(1);
+        }
     }
 
     async function createFullText(content) {
