@@ -36,6 +36,7 @@
     "readline-sync": "^1.4.9",
     "rimraf": "^2.6.3",
     "sbd": "^1.0.14",
+    "sqlite3": "^4.0.8",
     "videoshow": "^0.1.11",
     "watson-developer-cloud": "^3.18.2"
   }
