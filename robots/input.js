@@ -6,9 +6,9 @@ function robot() {
 
     const content = {};
 
-    const saveOrLoad = askSaveOrLoad();
+    const pattern = askAndReturnPattern();
 
-    if (saveOrLoad === "Custom") {
+    if (pattern === "Custom") {
 
         content.language = askVideoLanguage();
         content.voice = askVoice();
@@ -19,13 +19,13 @@ function robot() {
         state.save(content);
         database.saveBaseData(content);
 
-    }else if (saveOrLoad === "LoadId"){
+    }else if (pattern === "LoadId"){
 
-        content.id = askIdDatabase();
-        state.save(content);
-        robots.database("loadById");
+        const id = askIdDatabase();
 
-    }else if (saveOrLoad === "Default"){
+
+
+    }else if (pattern === "Default"){
 
         content.id = 1;
         state.save(content);
@@ -49,7 +49,7 @@ function robot() {
         return language[selectedLanguageIndex];
     }
 
-    function askSaveOrLoad(){
+    function askAndReturnPattern(){
         let query = "Do you want to use a pattern or custom?";
         const options = ['Default', 'Custom', "LoadId"];
         const selectedOptionIndex = readline.keyInSelect(options, query);
