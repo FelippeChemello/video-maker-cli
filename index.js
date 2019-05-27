@@ -14,7 +14,7 @@ const robots = {
 
 async function start() {
 
-    robots.database.saveBaseData();
+    robots.database.loadById(1);
 
     // await robots.start();
     // await robots.input();
