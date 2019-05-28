@@ -2,14 +2,6 @@ inserir musica no video
 
 implementar google trends (trends.js)
 
-testar input custom e LoadId
-
-Criar opção default, onde só pergunta a linguagem e o searchterm - LINHA 25 INPUT
-
-Verificar uso do robot database em input e adequar uso
-
 abrir sqlite https://sqliteonline.com/
-
-a tabela foi criada erroneamente, corrigir para que ID seja autoincrement
 
 Opção para substituição do imagemagick https://www.npmjs.com/package/jimp
