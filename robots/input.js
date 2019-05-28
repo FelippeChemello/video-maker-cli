@@ -2,38 +2,36 @@ const readline = require('readline-sync');
 const state = require('./state.js');
 const database = require('./database.js')
 
-function robot() {
+async function robot() {
 
-    const content = {};
+    let content = {};
 
     const pattern = askAndReturnPattern();
 
     if (pattern === "Custom") {
 
-        content.language = askVideoLanguage();
-        content.voice = askVoice();
-        content.searchTerm = askAndReturnSearchTerm();
-        content.prefix = askAndReturnPrefix();
-        content.maximumSentences = askQuantityofSentences();
-        content.videoDestination = askVideoDestination();
+        content.language = await askVideoLanguage();
+        content.voice = await askVoice();
+        content.searchTerm = await askAndReturnSearchTerm();
+        content.prefix = await askAndReturnPrefix();
+        content.maximumSentences = await askQuantityofSentences();
+        content.videoDestination = await askVideoDestination();
         state.save(content);
         database.saveBaseData(content);
 
     }else if (pattern === "LoadId"){
 
         const id = askIdDatabase();
-
-
+        content = await database.loadById(id);
+        state.save(content);
+        console.log(content)
 
     }else if (pattern === "Default"){
 
-        content.id = 1;
-        state.save(content);
-        robots.database("loadById");
-        console.log("input: " + content)
+        content = await database.loadById(1);
         content.searchTerm = askAndReturnSearchTerm();
         state.save(content);
-        robots.database("saveBaseData");
+        database.saveBaseData();
 
     }else{
 
@@ -136,6 +134,10 @@ function robot() {
         const selectedDestinationIndex = readline.keyInSelect(destination, query);
 
         return destination[selectedDestinationIndex];
+    }
+
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
     }
 
 }
