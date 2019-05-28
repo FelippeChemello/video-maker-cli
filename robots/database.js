@@ -38,41 +38,29 @@ function checkIfIdExistsInDatabase(id) {
         if (err || row.bool === 0) {
             console.error(`> [database-robot] Error at loading data: Invalid ID`);
             if (id <= 1) {
-                console.log("tchau")
                 process.exit(1);
             } else {
                 console.log(`> [database-robot] Searching by ID = ${id - 1}`);
                 checkIfIdExistsInDatabase(id - 1);
             }
         } else {
-            return true;
+            return id;
         }
     });
 }
 
 function loadById(id) {
-    if (checkIfIdExistsInDatabase(id)) {
-    console.log("oi")
+    return new Promise((resolve, reject) => {
         const sql = `SELECT * FROM content WHERE id = ${id}`;
         db.each(sql, function (err, row) {
             if (err) {
                 console.error("> [database-robot] Error at loading data " + err);
                 process.exit(1);
             }
-
-            content.prefix = row.prefix;
-            content.searchTerm = row.searchTerm;
-            content.maximumSentences = row.maximumSentences;
-            content.voice = row.voice;
-            content.videoDestination = row.videoDestination;
-            content.language = row.language;
-
-            state.save(content);
-
-            console.log(row);
             console.log(`> [database-robot] Data loaded from Database`);
+            resolve(row);
         });
-    }
+    });
 }
 
 function deleteById(id) {
@@ -91,8 +79,21 @@ function closeConnection() {
     });
 }
 
+function showAllTableContent() {
+    const sql = `SELECT * from content`
+    db.each(sql, function (err, row) {
+        if (err) {
+            console.error("> [database-robot] Error at loading data " + err);
+            process.exit(1);
+        }
+        console.log(row);
+    })
+}
+
 module.exports = {
+    showAllTableContent,
     saveBaseData,
+    deleteById,
     closeConnection,
     createTable,
     loadById
