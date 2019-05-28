@@ -13,17 +13,14 @@ const robots = {
 
 
 async function start() {
-
-    robots.database.loadById(1);
-
-    // await robots.start();
-    // await robots.input();
+    await robots.start();
+    await robots.input();
     // await robots.trends();
-    // await robots.text();
-    // await robots.image();
-    // await robots.voice();
-    // await robots.video();
-    // await robots.youtube()
+    await robots.text();
+    await robots.image();
+    await robots.voice();
+    await robots.video();
+    await robots.youtube()
 }
 
 start();
