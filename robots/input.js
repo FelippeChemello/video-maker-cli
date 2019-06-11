@@ -1,6 +1,7 @@
 const readline = require('readline-sync');
+const parser = require('rss-parser');
 const state = require('./state.js');
-const database = require('./database.js')
+const database = require('./database.js');
 
 async function robot() {
 
@@ -12,7 +13,12 @@ async function robot() {
 
         content.language = await askVideoLanguage();
         content.voice = await askVoice();
-        content.searchTerm = await askAndReturnSearchTerm();
+        const searchPlace = await askWikipediaOrGoogle();
+        if(searchPlace === 'Google'){
+            content.searchTerm = await askAndReturnGoogleTrend()
+        }else {
+            content.searchTerm = await askAndReturnSearchTerm();
+        }
         content.prefix = await askAndReturnPrefix();
         content.maximumSentences = await askQuantityofSentences();
         content.videoDestination = await askVideoDestination();
@@ -90,6 +96,20 @@ async function robot() {
         return readline.question(query);
     }
 
+    function askWikipediaOrGoogle(){
+        let query;
+        if (content.language === "PT") {
+            query = 'Deseja pesquisar um termo personalizado ou exibir sugestões do Google Trends?'
+        } else {
+            query = 'Do you want to insert a custom search term or show Google Trends Suggestions? '
+        }
+
+        const searchPlace = ['Custom', 'Google'];
+        const selectedSearchPlaceIndex = readline.keyInSelect(searchPlace, query);
+
+        return searchPlace[selectedSearchPlaceIndex];
+    }
+
     function askAndReturnSearchTerm() {
         let query;
         if (content.language === "PT") {
@@ -98,6 +118,34 @@ async function robot() {
             query = 'Insert a Wikipedia Search Term: '
         }
         return readline.question(query);
+    }
+    
+    async function askAndReturnGoogleTrend() {
+        let query;
+        if (content.language === "PT") {
+            console.log('[Input] Por favor aguarde...');
+            query = "Selecione o Trend para pesquisa na Wikipedia";
+        }else{
+            console.log('[Input] Please wait...')
+            query = "Choose your trend to search in Wikipedia";
+        }
+
+        const trends = await getGoogleTrends();
+        const choice = readline.keyInSelect(trends, query);
+
+        return trends[choice];
+    }
+
+    async function getGoogleTrends () {
+        let trend_url;
+        if (content.language === "PT") {
+            trend_url = "https://trends.google.com/trends/trendingsearches/daily/rss?geo=BR";
+        }else{
+            trend_url = "https://trends.google.com/trends/trendingsearches/daily/rss?geo=US";
+        }
+        const parsing = new parser();
+        const trends = await parsing.parseURL(trend_url);
+        return trends.items.map(({title}) => title)
     }
 
     function askAndReturnPrefix() {
