@@ -39,7 +39,8 @@ async function robot() {
       cx: googleSearchCredentials.searchEngineId,
       q: query,
       searchType: 'image',
-      num: 5
+      num: 5,
+      fileType: "png"
     })
 
     const imagesUrl = response.data.items.map((item) => {
