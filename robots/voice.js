@@ -28,7 +28,6 @@ async function robot() {
     if(content.language === "PT"){
         languageFree = "pt";
         prefixLanguagePaid = "pt-BR";
-        prefixLanguagePaid = "pt-BR";
         languagePaid = "pt-BR-Wavenet-A";
     } else if (content.language === "EN"){
         languageFree = "en";

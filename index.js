@@ -23,4 +23,8 @@ async function start() {
     await robots.youtube()
 }
 
-start();
+(async () => {
+    console.time()
+    await start();
+    console.timeEnd()
+})()
